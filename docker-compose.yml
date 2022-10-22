@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  web:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+    build: ./services
+    ports:
+      - "5001:443"
+      - "5000:80"
+    depends_on:
+      - db
+    networks:
+      - localdev
+  
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: CheapFuelDB
+    networks:
+      - localdev
+
+networks:
+  localdev:
+    name: localdev
