@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Users.Commands.AuthenticateUser;
 
-public class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCommand, string>
+public sealed class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCommand, string>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserPasswordHasher _passwordHasher;

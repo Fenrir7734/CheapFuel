@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, UserDto>
+public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, UserDetailsDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
@@ -28,7 +28,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
         _logger = logger;
     }
     
-    public async Task<UserDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<UserDetailsDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         if (await _userRepository.ExistsByUsername(request.Username))
         {
@@ -55,8 +55,11 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
         
         _userRepository.Add(newUser);
         await _unitOfWork.SaveAsync();
+
         _logger.LogInformation("User registered"); 
         return _mapper.Map<UserDto>(newUser);
         
+
+
     }
 }

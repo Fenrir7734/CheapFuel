@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Users.Commands.ChangeUserRole;
 
-public class ChangeUserRoleCommandHandler : IRequestHandler<ChangeUserRoleCommand>
+public sealed class ChangeUserRoleCommandHandler : IRequestHandler<ChangeUserRoleCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
