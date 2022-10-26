@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Users.Commands.ChangeUserRole;
 
@@ -9,11 +10,13 @@ public class ChangeUserRoleCommandHandler : IRequestHandler<ChangeUserRoleComman
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
+    private readonly  ILogger<ChangeUserRoleCommandHandler> _logger;
 
-    public ChangeUserRoleCommandHandler(IUnitOfWork unitOfWork, IUserRepository userRepository)
+    public ChangeUserRoleCommandHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, ILogger<ChangeUserRoleCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _logger = logger;
     }
 
     public async Task<Unit> Handle(ChangeUserRoleCommand request, CancellationToken cancellationToken)
@@ -23,7 +26,7 @@ public class ChangeUserRoleCommandHandler : IRequestHandler<ChangeUserRoleComman
 
         user.Role = request.Role;
         await _unitOfWork.SaveAsync();
-
+        _logger.LogInformation("Role changed");
         return Unit.Value;
     }
 }
