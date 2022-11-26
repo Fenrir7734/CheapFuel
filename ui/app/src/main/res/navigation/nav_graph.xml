@@ -47,10 +47,31 @@
         <action
             android:id="@+id/action_mapFragment_to_mapFilter3"
             app:destination="@id/mapFilter" />
+        <action
+            android:id="@+id/action_mapFragment_to_fuelStationDetailsFragment"
+            app:destination="@id/fuelStationDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapFilter"
         android:name="com.example.fuel.ui.fragment.map.MapFilter"
         android:label="MapFilter" />
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="com.example.fuel.ui.fragment.ScannerFragment"
+        android:label="fragment_scanner"
+        tools:layout="@layout/fragment_scanner" />
+    <dialog
+        android:id="@+id/fuelStationDetailsFragment"
+        android:name="com.example.fuel.ui.fragment.fuelstation.FuelStationDetailsFragment"
+        android:label="fragment_fuel_station_details"
+        tools:layout="@layout/fragment_fuel_station_details" >
+        <action
+            android:id="@+id/action_fuelStationDetailsFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
+        <argument
+            android:name="fuelStationId"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </dialog>
 
 </navigation>

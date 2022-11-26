@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
-import com.example.fuel.ui.utils.permission.allPermissionsGranted
 
 private val locationPermissions: Array<String> = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION,

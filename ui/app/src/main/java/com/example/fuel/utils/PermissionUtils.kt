@@ -1,4 +1,4 @@
-package com.example.fuel.ui.utils.permission
+package com.example.fuel.utils
 
 import android.content.Context
 import android.content.pm.PackageManager

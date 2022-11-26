@@ -56,4 +56,6 @@
     <string name="express_your_opinion">Wyraź swoją opinię</string>
     <string name="added_to_favourite">Dodano do ulubionych</string>
     <string name="removed_from_favourite">Usunięto z ulubionych</string>
+    <string name="camera_not_detected">Nie wykryto kamery</string>
+    <string name="missing_permissions">Nie przyznano wymaganych uprawnień: %1$s</string>
 </resources>
