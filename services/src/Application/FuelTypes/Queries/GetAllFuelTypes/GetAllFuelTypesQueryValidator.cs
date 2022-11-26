@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.FuelTypes.Queries.GetAllFuelTypes;
 
-public class GetAllFuelTypesQueryValidator : AbstractValidator<GetAllFuelTypesQuery>
+public sealed class GetAllFuelTypesQueryValidator : AbstractValidator<GetAllFuelTypesQuery>
 {
     public GetAllFuelTypesQueryValidator()
     {

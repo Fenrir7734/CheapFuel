@@ -7,7 +7,9 @@ namespace WebAPI.IntegrationTests.PredefinedData;
 
 public class UserQueryControllerData : IPredefinedData
 {
-    public const int InitialUsersCount = 5;
+    public const string User1Username = "Grzesio";
+    
+    public const int InitialUsersCount = 2;
 
     public void Seed(AppDbContext dbContext)
     {
@@ -25,24 +27,24 @@ public class UserQueryControllerData : IPredefinedData
     {
         new Domain.Entities.User()
         {
-            Id = 107890,
-            Username = "Grzesio",
+            Id = 200,
+            Username = User1Username,
             CreatedAt = new DateTime(2022, 11, 1),
             Email = "grzesio@gmail.com",
             EmailConfirmed = true,
             MultiFactorAuthEnabled = true,
-            Password = "Password123",
+            Password = AccountsData.DefaultPasswordHash,
             Role = Role.User
         },
         new Domain.Entities.User()
         {
-            Id = 1079781,
+            Id = 201,
             Username = "Kazio",
             CreatedAt = new DateTime(2022, 12, 31),
             Email = "kazio@gmail.com",
             EmailConfirmed = true,
             MultiFactorAuthEnabled = true,
-            Password = "Password123",
+            Password = AccountsData.DefaultPasswordHash,
             Role = Role.User
         }
     };

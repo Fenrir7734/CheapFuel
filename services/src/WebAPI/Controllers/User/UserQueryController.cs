@@ -11,6 +11,7 @@ using WebAPI.Common.Authorization;
 namespace WebAPI.Controllers.User;
 
 [ApiController]
+[AuthorizeUser]
 [Route("api/v1/users")]
 public class UserQueryController : ControllerBase
 {
@@ -21,29 +22,26 @@ public class UserQueryController : ControllerBase
         _mediator = mediator;
     }
     
-    [HttpGet]
-    public async Task<ActionResult<UserDto>> GetInfoAboutUser([FromQuery] string username)
+    [HttpGet("{username}")]
+    public async Task<ActionResult<UserDto>> GetInfoAboutUser([FromRoute] string username)
     {
-        var userInfo = await _mediator.Send(new GetUserQuery(username));
-        return Ok(userInfo);
+        var result = await _mediator.Send(new GetUserQuery(username));
+        return Ok(result);
     }
     
-    [HttpGet]
     [AuthorizeAdmin]
-    [Route("all-users")]
+    [HttpGet]
     public async Task<ActionResult<Page<UserDetailsDto>>> GetAllAsync([FromQuery] PageRequestDto pageRequestDto)
     {
         var result = await _mediator.Send(new GetAllUsersQuery(pageRequestDto));
         return Ok(result);
     }
     
-    [HttpGet]
-    [AuthorizeOwner]
-    [Route("logged-user-info")]
+    [HttpGet("logged-user")]
     public async Task<ActionResult<UserDetailsDto>> GetInfoAboutLoggedUser()
     {
-        var userInfo = await _mediator.Send(new GetLoggedUserQuery());
-        return Ok(userInfo);
+        var result = await _mediator.Send(new GetLoggedUserQuery());
+        return Ok(result);
     }
 }
 

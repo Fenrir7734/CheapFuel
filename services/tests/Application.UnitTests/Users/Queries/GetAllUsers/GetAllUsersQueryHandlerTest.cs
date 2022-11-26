@@ -50,13 +50,13 @@ public class GetAllUsersQueryHandlerTest
         };
         var query = new GetAllUsersQuery(pageRequestDto);
 
-        List<User> data = CreateData();
-        List<UserDetailsDto> dataDtos = CreateDto(data);
-        Page<User> services = CreatePage(pageRequest, data);
+        var data = CreateData();
+        var dataDtos = CreateDto(data);
+        var users = CreatePage(pageRequest, data);
 
         _userRepository
             .Setup(x => x.GetAllAsync(It.IsAny<PageRequest<User>>()))
-            .ReturnsAsync(services);
+            .ReturnsAsync(users);
 
         _mapper
             .Setup(x => x.Map<IEnumerable<UserDetailsDto>>(data))
@@ -65,7 +65,7 @@ public class GetAllUsersQueryHandlerTest
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
         
-        // Asssert
+        // Assert
         result.Should().NotBeNull();
         result.Data.Should().NotBeNull();
         result.Data.Should().HaveCount(2);
@@ -99,28 +99,46 @@ public class GetAllUsersQueryHandlerTest
 
     private List<User> CreateData() => new()
     {
-        new User()
+        new()
         {
             Username = "Grzesio",
-            CreatedAt = new DateTime(2022, 11, 1),
             Email = "grzesio@gmail.com",
             EmailConfirmed = true,
-            Role = Role.User
+            Role = Role.User,
+            CreatedAt = new DateTime(2022, 11, 1)
         },
-        new User()
+        new()
         {
             Username = "Kazio",
-            CreatedAt = new DateTime(2022, 10, 1),
             Email = "kazio@gmail.com",
             EmailConfirmed = true,
-            Role = Role.Admin
+            Role = Role.Admin,
+            CreatedAt = new DateTime(2022, 10, 1)
         },
     };
 
     private List<UserDetailsDto> CreateDto(List<User> data) => new()
     {
-        new(),
         new()
+        {
+            Username = data[0].Username,
+            Email = data[0].Email,
+            EmailConfirmed = data[0].EmailConfirmed,
+            MultiFactorAuthEnabled = data[0].MultiFactorAuthEnabled,
+            Role = data[0].Role,
+            Status = data[0].Status,
+            CreatedAt = data[0].CreatedAt
+        },
+        new()
+        {
+            Username = data[1].Username,
+            Email = data[1].Email,
+            EmailConfirmed = data[1].EmailConfirmed,
+            MultiFactorAuthEnabled = data[1].MultiFactorAuthEnabled,
+            Role = data[1].Role,
+            Status = data[1].Status,
+            CreatedAt = data[1].CreatedAt
+        }
     };
     
     private Page<E> CreatePage<E>(PageRequest<User> pageRequest, IEnumerable<E> data) => new()

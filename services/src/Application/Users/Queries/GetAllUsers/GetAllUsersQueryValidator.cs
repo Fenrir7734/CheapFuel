@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Users.Queries.GetAllUsers;
 
-public class GetAllUserQueryValidator : AbstractValidator<GetAllUsersQuery>
+public sealed class GetAllUserQueryValidator : AbstractValidator<GetAllUsersQuery>
 {
     public GetAllUserQueryValidator()
     {

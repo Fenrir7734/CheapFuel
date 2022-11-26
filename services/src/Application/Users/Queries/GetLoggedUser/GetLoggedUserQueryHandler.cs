@@ -24,7 +24,8 @@ public sealed class GetLoggedUserQueryHandler : IRequestHandler<GetLoggedUserQue
 
     public async Task<UserDetailsDto> Handle(GetLoggedUserQuery getLoggedUserQuery,  CancellationToken cancellationToken)
     {
-        var userId = _userPrincipalService.GetUserPrincipalId() ?? throw new UnauthorizedException("User not authorized to perform this");
+        var userId = _userPrincipalService.GetUserPrincipalId() 
+                     ?? throw new UnauthorizedException("User is not logged in!");
         var user = await _userRepository.GetAsync(userId)
                    ?? throw new NotFoundException(nameof(User), nameof(User.Username), userId.ToString());
 

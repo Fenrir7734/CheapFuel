@@ -17,7 +17,7 @@ public class GetUserQueryValidatorTest
     [InlineData("Username")]
     [InlineData("1")]
     [InlineData("_f3#$$")]
-    public void validation_passes_for_correct_data(string username)
+    public void Validation_passes_for_correct_data(string username)
     {
         // Arrange
         var query = new GetUserQuery(username);
@@ -33,7 +33,7 @@ public class GetUserQueryValidatorTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
-    public void validation_fails_for_empty_username(string username)
+    public void Validation_fails_for_empty_username(string username)
     {
         // Arrange
         var query = new GetUserQuery(username);

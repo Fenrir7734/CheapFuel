@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Authentication;
 using Application.Common.Exceptions;
@@ -40,12 +41,12 @@ public class GetLoggedUserQueryHandlerTest
     {
         // Arrange
         var user = new User { Id = 2,Username = "Krzyś", Role = Role.User };
-        var userDto = new UserDetailsDto() {Username = "Krzyś", Role = Role.User };
+        var userDto = new UserDetailsDto { Username = "Krzyś", Role = Role.User };
         var query = new GetLoggedUserQuery();
 
         _userPrincipalService
             .Setup(x => x.GetUserPrincipalId())
-            .Returns((int?)user.Id);
+            .Returns((int)user.Id);
         
         _userRepository
             .Setup(x => x.GetAsync(user.Id))
@@ -60,5 +61,50 @@ public class GetLoggedUserQueryHandlerTest
         
         // Assert 
         result.Should().Be(userDto);
+    }
+    
+    [Fact]
+    public async Task Fails_to_return_user_info_if_user_is_not_logged_in()
+    {
+        // Arrange
+        var query = new GetLoggedUserQuery();
+
+        _userPrincipalService
+            .Setup(x => x.GetUserPrincipalId())
+            .Returns((int?)null);
+
+        // Act
+        Func<Task<UserDetailsDto>> act = _handler.Awaiting(x => x.Handle(query, CancellationToken.None));
+        
+        // Assert 
+        await act
+            .Should()
+            .ThrowAsync<UnauthorizedException>()
+            .WithMessage("User is not logged in!");
+    }
+    
+    [Fact]
+    public async Task Fails_to_return_user_info_if_user_not_found()
+    {
+        // Arrange
+        const int userId = 1;
+        
+        var query = new GetLoggedUserQuery();
+
+        _userPrincipalService
+            .Setup(x => x.GetUserPrincipalId())
+            .Returns(userId);
+
+        _userRepository
+            .Setup(x => x.GetAsync(userId))
+            .ReturnsAsync((User)null!);
+
+        // Act
+        Func<Task<UserDetailsDto>> act = _handler.Awaiting(x => x.Handle(query, CancellationToken.None));
+        
+        // Assert 
+        await act
+            .Should()
+            .ThrowAsync<NotFoundException>();
     }
 }

@@ -11,5 +11,4 @@ public interface IUserRepository: IBaseRepository<User>
     Task<bool> ExistsByEmail(string email);
     
     Task<bool?> IsEmailVerified(string username);
-    
 }
