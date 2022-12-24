@@ -18,8 +18,9 @@ object RetrofitInstance {
 
     private val client by lazy {
         OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.MINUTES)
             .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .build()
     }
 

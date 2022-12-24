@@ -48,4 +48,10 @@ class PriceUploadingFragment : Fragment() {
         binding.clUploadedContainer.visibility = View.VISIBLE
         binding.clUploadContainer.visibility = View.GONE
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        viewModel.clear()
+    }
 }

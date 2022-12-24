@@ -55,4 +55,9 @@ class ScannerViewModel(
         val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
         return File(activity.filesDir, "PHOTO_${sdf.format(Date())}.jpeg")
     }
+
+    fun clear() {
+        uploadFuelPrices = MutableLiveData()
+        _image = null
+    }
 }
