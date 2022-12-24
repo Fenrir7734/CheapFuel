@@ -89,4 +89,6 @@
     <string name="role">Rola</string>
     <string name="ask_if_delete_review">Czy na pewno chcesz usunąć tą recenzję?</string>
     <string name="more">Więcej</string>
+    <string name="missing_permissions">Nie przyznano wymaganych uprawnień: %1$s</string>
+    <string name="camera_not_detected">Nie wykryto kamery</string>
 </resources>

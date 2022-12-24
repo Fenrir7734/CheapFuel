@@ -1,13 +1,17 @@
 package com.example.fuel.ui.fragment.fuelstation
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import com.example.fuel.R
 import com.example.fuel.databinding.FragmentFuelStationDetailsBinding
 import com.example.fuel.mock.Auth
@@ -17,6 +21,7 @@ import com.example.fuel.model.FuelStationService
 import com.example.fuel.model.FuelTypeWithPrice
 import com.example.fuel.model.review.Review
 import com.example.fuel.ui.common.initChipAppearance
+import com.example.fuel.ui.utils.permission.allPermissionsGranted
 import com.example.fuel.utils.calculateDistance
 import com.example.fuel.utils.converters.UnitConverter
 import com.example.fuel.utils.getUserLocation
@@ -32,6 +37,14 @@ class FuelStationDetailsFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentFuelStationDetailsBinding
     private lateinit var viewModel: FuelStationDetailsViewModel
     private var fuelStationId: Long? = null
+
+    private val ocrRequiredPermissions: Array<String> = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.CAMERA)
+
+    private val requestPermissionsResultLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()) { permissions -> handlePermissions(permissions) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +62,7 @@ class FuelStationDetailsFragment : BottomSheetDialogFragment() {
         initUserReview()
         initReviewSection()
         initAddReviewButton()
+        initOcrButton()
         initNewReviewObserver()
         initEditedReviewObserver()
         initDeleteUserReviewObserver()
@@ -404,6 +418,41 @@ class FuelStationDetailsFragment : BottomSheetDialogFragment() {
             val reviewEditorFragment = FuelStationReviewEditorFragment(null, false)
             reviewEditorFragment.show(requireFragmentManager(), FuelStationReviewEditorFragment.TAG)
         }
+    }
+
+    private fun initOcrButton() {
+        val button =binding.acibOcrButton
+        button.setOnClickListener {
+            if (allPermissionsGranted(requireContext(), ocrRequiredPermissions)
+                && requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                navigateToScanner()
+            } else if (!allPermissionsGranted(requireContext(), ocrRequiredPermissions)) {
+                requestPermissionsResultLauncher.launch(ocrRequiredPermissions)
+            } else if (!requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                val toast = Toast.makeText(requireContext(), resources.getString(R.string.camera_not_detected), Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+    }
+
+    private fun handlePermissions(permissions: Map<String, Boolean>) {
+        val deniedList = permissions.filter { !it.value }.map { it.key }
+
+        if (deniedList.isNotEmpty()) {
+            val missingPermissions = deniedList.map {
+                val v = it.split(".")
+                v[v.size - 1]
+            }.joinToString(",")
+            val text = resources.getString(R.string.missing_permissions, missingPermissions)
+            val toast = Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT)
+            toast.show()
+        } else {
+            navigateToScanner()
+        }
+    }
+
+    private fun navigateToScanner() {
+        Navigation.findNavController(requireActivity(), R.id.fragmentContainerView).navigate(R.id.scannerFragment)
     }
 
     private fun prepareFavouriteButtonToRemoving() {
