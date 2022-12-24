@@ -11,10 +11,12 @@ namespace WebAPI.Controllers.FuelPrice;
 public sealed class FuelPriceCommandController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IWebHostEnvironment _environment;
 
-    public FuelPriceCommandController(IMediator mediator)
+    public FuelPriceCommandController(IMediator mediator, IWebHostEnvironment environment)
     {
         _mediator = mediator;
+        _environment = environment;
     }
 
     [AuthorizeOwner]
@@ -22,6 +24,20 @@ public sealed class FuelPriceCommandController : ControllerBase
     public async Task<ActionResult<IEnumerable<FuelPriceDto>>> UpdateFuelPrices([FromBody] NewFuelPricesAtStationDto dto)
     {
         var result = await _mediator.Send(new UpdateFuelPriceByOwnerCommand(dto));
-        return Ok(result); // Should be updated after creating endpoint ot get fuel prices
+        return Ok(result); // Should be updated after creating endpoint to get fuel prices
     }
+
+    [HttpPost("extract")]
+    public async Task<ActionResult> Post([FromForm] FileUploadApi objFile)
+    {
+        await using var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Upload\\" + objFile.File.FileName);
+        await objFile.File.CopyToAsync(fileStream);
+        fileStream.Flush();
+        return await Task.FromResult(Ok());
+    }
+}
+
+public class FileUploadApi
+{
+    public IFormFile File { get; set; }
 }
