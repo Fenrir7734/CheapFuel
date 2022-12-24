@@ -161,6 +161,15 @@
     <fragment
         android:id="@+id/scannerFragment"
         android:name="com.example.fuel.ui.fragment.scanner.ScannerFragment"
-        android:label="ScannerFragment" />
+        android:label="ScannerFragment" >
+        <action
+            android:id="@+id/action_scannerFragment_to_priceUploadingFragment"
+            app:destination="@id/priceUploadingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/priceUploadingFragment"
+        android:name="com.example.fuel.ui.fragment.scanner.PriceUploadingFragment"
+        android:label="Aktualizacja cen"
+        tools:layout="@layout/fragment_price_uploading" />
 
 </navigation>

@@ -25,15 +25,19 @@ import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import com.example.fuel.R
 import com.example.fuel.databinding.FragmentScannerBinding
-import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
+import com.example.fuel.viewmodel.ScannerViewModel
+import com.example.fuel.viewmodel.ViewModelFactory
 import java.util.*
 
 
-class ScannerFragment : Fragment() {
+class ScannerFragment : Fragment(R.layout.fragment_scanner) {
     private lateinit var binding: FragmentScannerBinding
+    private lateinit var viewModel: ScannerViewModel
+
     private lateinit var textureView: TextureView
     private lateinit var cameraId: String
     private lateinit var backgroundHandlerThread: HandlerThread
@@ -46,10 +50,10 @@ class ScannerFragment : Fragment() {
     private lateinit var previewSize: Size
     private lateinit var videoSize: Size
     private var orientations : SparseIntArray = SparseIntArray(4).apply {
-        append(Surface.ROTATION_0, 0)
-        append(Surface.ROTATION_90, 90)
-        append(Surface.ROTATION_180, 180)
-        append(Surface.ROTATION_270, 270)
+        append(Surface.ROTATION_0, 90)
+        append(Surface.ROTATION_90, 0)
+        append(Surface.ROTATION_180, 270)
+        append(Surface.ROTATION_270, 180)
     }
 
     private var shouldProceedWithOnResume: Boolean = true
@@ -60,15 +64,22 @@ class ScannerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentScannerBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(requireActivity(), ViewModelFactory())[ScannerViewModel::class.java]
 
         textureView = binding.textureView
         cameraManager = requireActivity().getSystemService(Context.CAMERA_SERVICE) as CameraManager
 
         binding.takePhotoBtn.apply { setOnClickListener { takePhoto() } }
 
+        initUploadFuelPricesObserver()
         startBackgroundThread()
 
         return binding.root
+    }
+
+    private fun initUploadFuelPricesObserver() {
+        viewModel.uploadFuelPrices.observe(viewLifecycleOwner) { response ->
+        }
     }
 
     override fun onResume() {
@@ -135,8 +146,11 @@ class ScannerFragment : Fragment() {
 
     private val onImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
         val image = reader.acquireLatestImage()
-        saveImage(image)
-        image.close()
+        viewModel.setImage(image)
+
+        requireActivity().runOnUiThread {
+            Navigation.findNavController(binding.root).navigate(R.id.priceUploadingFragment)
+        }
     }
 
     private val surfaceTextureListener = object : TextureView.SurfaceTextureListener {
@@ -146,7 +160,12 @@ class ScannerFragment : Fragment() {
 
         override fun onSurfaceTextureSizeChanged(texture: SurfaceTexture, width: Int, height: Int) { }
 
-        override fun onSurfaceTextureDestroyed(texture: SurfaceTexture): Boolean { return true }
+        override fun onSurfaceTextureDestroyed(texture: SurfaceTexture): Boolean {
+            cameraCaptureSession.close()
+            cameraDevice.close()
+
+            return true
+        }
 
         override fun onSurfaceTextureUpdated(texture: SurfaceTexture) { }
     }
@@ -178,21 +197,10 @@ class ScannerFragment : Fragment() {
         override fun onConfigureFailed(p0: CameraCaptureSession) { }
     }
 
-    private fun saveImage(image: Image) {
-        val file = createFile()
+    override fun onDestroyView() {
+        super.onDestroyView()
 
-        val buffer = image.planes[0].buffer
-        val bytes = ByteArray(buffer.capacity())
-        buffer.get(bytes)
-        val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)
-
-        FileOutputStream(file).use {
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, it)
-        }
-    }
-
-    private fun createFile(): File {
-        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
-        return File(requireActivity().filesDir, "PHOTO_${sdf.format(Date())}.png")
+        cameraDevice.close()
+        imageReader.close()
     }
 }

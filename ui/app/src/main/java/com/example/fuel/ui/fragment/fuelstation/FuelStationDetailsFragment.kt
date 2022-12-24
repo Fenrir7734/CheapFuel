@@ -453,6 +453,7 @@ class FuelStationDetailsFragment : BottomSheetDialogFragment() {
 
     private fun navigateToScanner() {
         Navigation.findNavController(requireActivity(), R.id.fragmentContainerView).navigate(R.id.scannerFragment)
+        dismissNow()
     }
 
     private fun prepareFavouriteButtonToRemoving() {
