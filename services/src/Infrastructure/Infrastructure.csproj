@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AWSSDK.Textract" Version="3.7.104.21" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
@@ -27,7 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\Services" />
       <Folder Include="Persistence\Migrations\MsSql" />
       <Folder Include="Persistence\Migrations\MySql" />
     </ItemGroup>

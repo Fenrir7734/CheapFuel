@@ -1,4 +1,5 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common;
+using Application.Common.Exceptions;
 using Application.Models;
 using Application.Models.Filters;
 using Application.Models.Pagination;
@@ -92,12 +93,12 @@ public class GetAllFuelStationForListQueryHandler
 
     private IEnumerable<FuelStation> ApplyDistanceFilter(IEnumerable<FuelStation> fuelStations, FuelStationFilterWithLocalizationDto filter)
     {
-        return fuelStations.Where(fs =>
-            GetDistance(
-                (double)fs.GeographicalCoordinates!.Longitude, 
-                (double)fs.GeographicalCoordinates.Latitude,
-                filter.UserLongitude!.Value, 
-                filter.UserLatitude!.Value) <= filter.Distance)
+        return fuelStations.Where(fs => 
+                Utlis.GetDistance(
+                    (double)fs.GeographicalCoordinates!.Longitude, 
+                    (double)fs.GeographicalCoordinates.Latitude, 
+                    filter.UserLongitude!.Value, 
+                    filter.UserLatitude!.Value) <= filter.Distance)
             .ToList();
     }
 
@@ -134,23 +135,12 @@ public class GetAllFuelStationForListQueryHandler
         if (filter.UserLongitude is null || filter.UserLatitude is null) 
             return fuelStations;
 
-        double Func(FuelStation fs) => GetDistance(
+        double Func(FuelStation fs) => Utlis.GetDistance(
             (double)fs.GeographicalCoordinates!.Longitude, 
             (double)fs.GeographicalCoordinates.Latitude, 
             filter.UserLongitude.Value, 
             filter.UserLatitude.Value);
         return OrderBy(fuelStations, Func, sortDto.SortDirection!.Value);
-    }
-    
-    private double GetDistance(double longitude, double latitude, double otherLongitude, double otherLatitude)
-    {
-        var d1 = latitude * (Math.PI / 180.0);
-        var num1 = longitude * (Math.PI / 180.0);
-        var d2 = otherLatitude * (Math.PI / 180.0);
-        var num2 = otherLongitude * (Math.PI / 180.0) - num1;
-        var d3 = Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0) + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
-    
-        return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
     }
 
     private IEnumerable<FuelStation> OrderByPrice(IEnumerable<FuelStation> fuelStations, SortDto sortDto)

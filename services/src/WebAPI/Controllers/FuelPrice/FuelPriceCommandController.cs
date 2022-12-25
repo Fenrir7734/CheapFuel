@@ -1,8 +1,10 @@
-﻿using Application.FuelPrices.Commands.UpdateFuelPriceByOwner;
+﻿using Application.FuelPrices.Commands.ExtractFuelPrices;
+using Application.FuelPrices.Commands.UpdateFuelPriceByOwner;
 using Application.Models.FuelPriceDtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Common.Authorization;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers.FuelPrice;
 
@@ -28,16 +30,20 @@ public sealed class FuelPriceCommandController : ControllerBase
     }
 
     [HttpPost("extract")]
-    public async Task<ActionResult> Post([FromForm] FileUploadApi objFile)
+    public async Task<ActionResult> Post([FromForm] FuelPriceUpload fuelPriceUpload)
     {
-        await using var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Upload\\" + objFile.File.FileName);
-        await objFile.File.CopyToAsync(fileStream);
-        fileStream.Flush();
-        return await Task.FromResult(Ok());
+        // await using var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Upload\\" + objFile.File.FileName);
+        // await objFile.File.CopyToAsync(fileStream);
+        // fileStream.Flush();
+        // return await Task.FromResult(Ok());
+        var command = new ExtractFuelPricesCommand(
+            FuelStationId: fuelPriceUpload.FuelStationId,
+            UserLongitude: fuelPriceUpload.UserLongitude,
+            UserLatitude: fuelPriceUpload.UserLatitude,
+            Image: fuelPriceUpload.ImageAsBytes(),
+            ContentType: fuelPriceUpload.Image?.ContentType);
+        
+        var result = await _mediator.Send(command);
+        return Ok(result);
     }
-}
-
-public class FileUploadApi
-{
-    public IFormFile File { get; set; }
 }

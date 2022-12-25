@@ -14,6 +14,7 @@ builder.Services.AddRepositories();
 builder.Services.AddAuthenticationAndAuthorization(builder.Configuration, builder.Environment);
 builder.Services.AddAuthorizationPolicies();
 builder.Services.AddSmtpService(builder.Configuration);
+builder.Services.AddAmazonTextract();
 builder.Services.AddWebApiServices();
 builder.Services.AddSwagger();
 builder.Host.UseNLog();
@@ -36,8 +37,6 @@ else
 {
     app.UseHttpsRedirection();
 }
-
-app.UseStaticFiles();
 
 app.UseRouting();
 

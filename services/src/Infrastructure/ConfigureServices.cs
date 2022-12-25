@@ -6,6 +6,7 @@ using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Repositories.Tokens;
 using Infrastructure.Common.Services.Email;
+using Infrastructure.Common.Services.OCR;
 using Infrastructure.Exceptions;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Policies.EmailVerifiedRequirement;
@@ -136,6 +137,11 @@ public static class ConfigureServices
         
         configuration.GetSection("Email").Bind(emailSettings);
         ValidateSmtpSettings(emailSettings);
+    }
+
+    public static void AddAmazonTextract(this IServiceCollection services)
+    {
+        services.AddScoped<IOcrService, AmazonTextractService>();
     }
 
     private static void ValidateAuthenticationSettings(AuthenticationSettings settings)
